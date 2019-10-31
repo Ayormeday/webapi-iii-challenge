@@ -28,17 +28,24 @@ router.get('/:id', validateUserId, (req, res) => {
 
 });
 
-router.get('/:id/posts', (req, res) => {
+router.get('/:id/posts', validateUserId, (req, res, next) => {
+    Users.getUserPosts(req.user.id).then(posts => {
+      res.status(200).json(posts);
+    }).catch(next);
+  });
 
-});
+  router.delete('/:id', validateUserId, (req, res, next) => {
+    Users.delete(req.user.id).then(deleted => {
+      res.status(200).json(req.user);
+    }).catch(next);
+  });
 
-router.delete('/:id', (req, res) => {
-
-});
-
-router.put('/:id', (req, res) => {
-
-});
+  router.put('/:id', validateUserId, validateUser, (req, res, next) => {
+    const { name } = req.body;
+    Users.update(req.user.id, { name }).then(updated => {
+      res.status(200).json({ ...req.user, name });
+    }).catch(next);
+  });
 
 //custom middleware
 
